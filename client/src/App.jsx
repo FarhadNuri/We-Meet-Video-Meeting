@@ -9,6 +9,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 import { Toaster } from 'react-hot-toast'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import MeetingRoom from './pages/MeetingRoom'
 
 const App = () => {
   return (
@@ -24,6 +25,7 @@ const App = () => {
         <Route element={<ProtectedRoute />}>
           <Route element={<ProtectedLayout />}>
             <Route path='/dashboard' element={<Dashboard />} />
+            <Route path="/meeting/:id" element={<MeetingRoom />} />
             <Route path='/sessions' element={<Sessions />} />
             <Route path='/pricing' element={<Pricing />} />
           </Route>
