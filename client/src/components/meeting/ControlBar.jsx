@@ -1,11 +1,23 @@
-import { VideoIcon, PhoneOffIcon, CheckIcon, CopyIcon, MicIcon, MicOffIcon, VideoOffIcon, MessageSquareIcon, UsersIcon } from 'lucide-react'
+import { Mic, MicOff, Video, VideoOff, MessageSquare, Users, Copy, Check, LogOut, PhoneOff } from 'lucide-react'
 import React, { useState } from 'react'
 import toast from 'react-hot-toast'
 
-const ControlBar = ({ roomId, audioEnabled, videoEnabled, onToggleAudio, onToggleVideo,
-    onToggleChat, onToggleParticipants, isChatOpen, isParticipantsOpen, unreadCount,
-    participantCount, isHost, onLeave, onEndMeeting }) => {
-
+const ControlBar = ({
+    roomId,
+    audioEnabled,
+    videoEnabled,
+    onToggleAudio,
+    onToggleVideo,
+    onToggleChat,
+    onToggleParticipants,
+    isChatOpen,
+    isParticipantsOpen,
+    unreadCount,
+    participantCount,
+    isHost,
+    onLeave,
+    onEndMeeting
+}) => {
     const [copied, setCopied] = useState(false)
 
     const copyMeetingId = () => {
@@ -16,85 +28,153 @@ const ControlBar = ({ roomId, audioEnabled, videoEnabled, onToggleAudio, onToggl
     }
 
     return (
-        <footer className="w-full bg-white/90 backdrop-blur-md border-t border-slate-200/80 px-6 py-4 flex items-center justify-between z-40 shadow-lg shadow-slate-200/50">
-            {/* Left Info / Copy Link */}
-            <div className="hidden sm:flex items-center gap-3">
-                <span className="text-xs font-medium text-slate-600 font-mono tracking-wider">Id: {roomId}</span>
-                <button onClick={copyMeetingId}
-                    className='p-2 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 hover:text-slate-900 flex items-center gap-1.5 text-xs font-medium cursor-pointer transition-all'>
-                    {copied ? <CheckIcon className="w-3.5 h-3.5 text-emerald-600" /> : <CopyIcon className="w-3.5 h-3.5" />}
-                    <span>{copied ? "Copied" : "Copy Link"}</span>
-                </button>
-            </div>
-
-            {/* Center Controls */}
-            {/* Center Controls */}
-            <div className="flex items-center gap-3 mx-auto sm:mx-0">
-                {/* Audio Toggle */}
-                <button onClick={onToggleAudio}
-                    className={`p-3.5 rounded-2xl transition-all cursor-pointer border ${audioEnabled ? "bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-300 shadow-xs" : "bg-rose-50 hover:bg-rose-100 text-rose-600 border-rose-200 shadow-xs"}`}
-                    title={audioEnabled ? "Mute Microphone" : "Unmute Microphone"}>
-                    {audioEnabled ? <MicIcon className="w-5 h-5" /> : <MicOffIcon
-                        className="w-5 h-5" />}
-                </button>
-
-                <button onClick={onToggleVideo}
-                    className={`p-3.5 rounded-2xl transition-all cursor-pointer border ${videoEnabled ? "bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-300 shadow-xs" : "bg-rose-50 hover:bg-rose-100 text-rose-600 border-rose-200 shadow-xs"}`}
-                    title={videoEnabled ? "Turn Off Camera" : "Turn On Camera"}>
-                    {videoEnabled ? <VideoIcon className="w-5 h-5" /> : <VideoOffIcon
-                        className="w-5 h-5" />}
+        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 w-[calc(100vw-32px)] sm:w-auto max-w-lg">
+            <div
+                className="w-full sm:w-auto px-3 py-2 rounded-full flex items-center justify-between sm:justify-center gap-2 sm:gap-2.5 transition-all"
+                style={{
+                    backgroundColor: 'var(--bg-elevated)',
+                    border: '1px solid var(--border)',
+                    boxShadow: '0 8px 30px rgba(0, 0, 0, 0.25)',
+                }}
+            >
+                {/* Mic toggle (circular 44px, red-tinted when off) */}
+                <button
+                    type="button"
+                    onClick={onToggleAudio}
+                    title={audioEnabled ? "Turn off microphone" : "Turn on microphone"}
+                    className="w-11 h-11 rounded-full flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                    style={{
+                        backgroundColor: audioEnabled ? 'var(--bg-section)' : 'rgba(239, 68, 68, 0.15)',
+                        color: audioEnabled ? 'var(--text-primary)' : '#EF4444',
+                        border: `1px solid ${audioEnabled ? 'var(--border)' : 'rgba(239, 68, 68, 0.3)'}`,
+                    }}
+                >
+                    {audioEnabled ? <Mic className="w-5 h-5" strokeWidth={1.5} /> : <MicOff className="w-5 h-5" strokeWidth={1.5} />}
                 </button>
 
-                <button onClick={onToggleChat}
-                    className={`p-3.5 rounded-2xl transition-all cursor-pointer border ${isChatOpen
-                        ? "bg-primary text-white border-primary shadow-md shadow-primary/20"
-                        : "bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-300 shadow-xs"}`}
-                    title="Toggle In-Meeting Chat">
-                    <MessageSquareIcon className="w-5 h-5" />
+                {/* Camera toggle (circular 44px, red-tinted when off) */}
+                <button
+                    type="button"
+                    onClick={onToggleVideo}
+                    title={videoEnabled ? "Turn off camera" : "Turn on camera"}
+                    className="w-11 h-11 rounded-full flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                    style={{
+                        backgroundColor: videoEnabled ? 'var(--bg-section)' : 'rgba(239, 68, 68, 0.15)',
+                        color: videoEnabled ? 'var(--text-primary)' : '#EF4444',
+                        border: `1px solid ${videoEnabled ? 'var(--border)' : 'rgba(239, 68, 68, 0.3)'}`,
+                    }}
+                >
+                    {videoEnabled ? <Video className="w-5 h-5" strokeWidth={1.5} /> : <VideoOff className="w-5 h-5" strokeWidth={1.5} />}
+                </button>
+
+                {/* Participants toggle (Users icon + live count badge) */}
+                <button
+                    type="button"
+                    onClick={onToggleParticipants}
+                    title="Participants"
+                    className="w-11 h-11 rounded-full flex items-center justify-center transition-colors cursor-pointer relative shrink-0"
+                    style={{
+                        backgroundColor: isParticipantsOpen ? '#2B5CF0' : 'var(--bg-section)',
+                        color: isParticipantsOpen ? '#FFFFFF' : 'var(--text-primary)',
+                        border: `1px solid ${isParticipantsOpen ? '#2B5CF0' : 'var(--border)'}`,
+                    }}
+                >
+                    <Users className="w-5 h-5" strokeWidth={1.5} />
+                    {participantCount > 0 && (
+                        <span
+                            className="absolute -top-1 -right-1 min-w-[20px] h-[20px] px-1 rounded-full text-[11px] font-semibold flex items-center justify-center border"
+                            style={{
+                                backgroundColor: isParticipantsOpen ? '#1D4ED8' : 'var(--bg-card)',
+                                color: isParticipantsOpen ? '#FFFFFF' : 'var(--text-primary)',
+                                borderColor: 'var(--border)',
+                            }}
+                        >
+                            {participantCount}
+                        </span>
+                    )}
+                </button>
+
+                {/* Chat toggle (MessageSquare icon + red unread-count badge) */}
+                <button
+                    type="button"
+                    onClick={onToggleChat}
+                    title="In-call chat"
+                    className="w-11 h-11 rounded-full flex items-center justify-center transition-colors cursor-pointer relative shrink-0"
+                    style={{
+                        backgroundColor: isChatOpen ? '#2B5CF0' : 'var(--bg-section)',
+                        color: isChatOpen ? '#FFFFFF' : 'var(--text-primary)',
+                        border: `1px solid ${isChatOpen ? '#2B5CF0' : 'var(--border)'}`,
+                    }}
+                >
+                    <MessageSquare className="w-5 h-5" strokeWidth={1.5} />
                     {unreadCount > 0 && !isChatOpen && (
-                        <span className='absolute -top-1 -right-1 bg-primary text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-xs'>
+                        <span
+                            className="absolute -top-1 -right-1 min-w-[20px] h-[20px] px-1 rounded-full text-[11px] font-semibold flex items-center justify-center bg-[#EF4444] text-white border-2"
+                            style={{ borderColor: 'var(--bg-elevated)' }}
+                        >
                             {unreadCount}
                         </span>
                     )}
                 </button>
 
-
-                <button onClick={onToggleParticipants}
-                    className={`relative p-3.5 rounded-2xl transition-all cursor-pointer border ${isParticipantsOpen
-                        ? "bg-primary text-white border-primary shadow-md shadow-primary/20"
-                        : "bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-300 shadow-xs"}`}
-                    title="Toggle Participants List">
-                    <UsersIcon className="w-5 h-5" />
-
-                    <span className='absolute -top-1 -right-1 bg-slate-200 text-slate-800 text-[10px] font-bold px-1.5 py-0.5 rounded-full border border-slate-300'>
-                        {participantCount}
-                    </span>
-
+                {/* Copy link button */}
+                <button
+                    type="button"
+                    onClick={copyMeetingId}
+                    title="Copy meeting link"
+                    className="w-11 h-11 rounded-full flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                    style={{
+                        backgroundColor: 'var(--bg-section)',
+                        color: 'var(--text-primary)',
+                        border: '1px solid var(--border)',
+                    }}
+                >
+                    {copied ? <Check className="w-5 h-5 text-emerald-500" strokeWidth={1.5} /> : <Copy className="w-5 h-5" strokeWidth={1.5} />}
                 </button>
 
+                {/* Thin vertical divider */}
+                <div className="w-[1px] h-7 my-auto shrink-0" style={{ backgroundColor: 'var(--border)' }} />
+
+                {/* Leave / End buttons */}
                 {isHost ? (
-                    <button onClick={onEndMeeting}
-                        className="p-3.5 rounded-2xl bg-red-600 hover:bg-red-700 text-white
-  shadow-lg shadow-red-500/25 transition-all cursor-pointer border
-  border-red-500 ml-2 font-medium text-xs flex items-center gap-1.5"
-                        title="End Meeting for All">
-                        <PhoneOffIcon className="w-5 h-5" />
-                        <span className="hidden md:inline">End Meeting</span>
-                    </button>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                        <button
+                            type="button"
+                            onClick={onLeave}
+                            title="Leave meeting"
+                            className="h-11 px-3.5 sm:px-4 rounded-full text-[14px] font-medium transition-colors cursor-pointer flex items-center gap-1.5"
+                            style={{
+                                backgroundColor: 'var(--bg-section)',
+                                border: '1px solid var(--border)',
+                                color: 'var(--text-primary)',
+                            }}
+                        >
+                            <LogOut className="w-4 h-4" strokeWidth={1.5} />
+                            <span className="hidden md:inline">Leave</span>
+                        </button>
+                        <button
+                            type="button"
+                            onClick={onEndMeeting}
+                            title="End meeting for all participants"
+                            className="h-11 px-4 sm:px-5 rounded-full bg-[#EF4444] hover:bg-[#DC2626] text-white text-[14px] font-medium transition-colors cursor-pointer flex items-center gap-1.5 shadow-sm"
+                        >
+                            <PhoneOff className="w-4 h-4" strokeWidth={1.5} />
+                            <span className="hidden sm:inline">End for all</span>
+                        </button>
+                    </div>
                 ) : (
-                    <button onClick={onLeave}
-                        className="p-3.5 rounded-2xl bg-red-600 hover:bg-red-700 text-white
-  shadow-lg shadow-red-500/25 transition-all cursor-pointer border
-  border-red-500 ml-2"
-                        title="Leave Meeting">
-                        <PhoneOffIcon className="w-5 h-5" />
+                    <button
+                        type="button"
+                        onClick={onLeave}
+                        title="Leave meeting"
+                        className="h-11 px-4 rounded-full bg-[#EF4444] hover:bg-[#DC2626] text-white text-[14px] font-medium transition-colors cursor-pointer flex items-center gap-1.5 shrink-0 shadow-sm"
+                    >
+                        <LogOut className="w-4 h-4" strokeWidth={1.5} />
+                        <span className="hidden sm:inline">Leave</span>
                     </button>
                 )}
             </div>
-            <div className="hidden sm:block w-32 text-right">
-                <span className="font-medium text-slate-400">MeetUp Room</span>
-            </div>
-        </footer>
+        </div>
     )
 }
 
