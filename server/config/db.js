@@ -55,6 +55,16 @@ export async function initDB() {
             );
         `;
 
+        await sql`
+            CREATE TABLE IF NOT EXISTS hidden_meetings (
+                id SERIAL PRIMARY KEY,
+                user_id VARCHAR(255) NOT NULL REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE,
+                meeting_id INT NOT NULL REFERENCES meetings(id) ON DELETE CASCADE ON UPDATE CASCADE,
+                created_at TIMESTAMPTZ DEFAULT NOW(),
+                UNIQUE(user_id, meeting_id)
+            );
+        `;
+
     } catch (error) {
         console.error("Error initializing database tables: ", error)
     }
