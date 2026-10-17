@@ -1,19 +1,44 @@
-import { ArrowRightIcon } from 'lucide-react'
+import { ArrowRight, Calendar } from 'lucide-react'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
 const EmptySessions = () => {
   return (
-    <div className="w-full bg-white/50 backdrop-blur rounded-3xl p-12 xl:py-24 text-center border border-slate-100 shadow-sm flex flex-col items-center justify-center space-y-4">
-      <h3 className="text-xl lg:text-2xl font-medium text-slate-700">No meeting history yet</h3>
-      <p className="text-sm text-slate-400 max-w-md">Once you create or join meeting calls, your meeting sessions, participants, and chat logs will appear here.</p>
+    <div
+      className="w-full rounded-[12px] border border-dashed p-12 text-center flex flex-col items-center justify-center gap-3"
+      style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border)' }}
+    >
+      <div
+        className="w-12 h-12 rounded-full border flex items-center justify-center mb-1"
+        style={{
+          backgroundColor: 'var(--bg-section)',
+          borderColor: 'var(--border)',
+        }}
+      >
+        <Calendar className="w-5 h-5" strokeWidth={1.5} style={{ color: 'var(--text-muted)' }} />
+      </div>
 
-      <Link to="/dashboard" className="bg-primary hover:bg-primary-hover text-white font-medium px-6 py-3 rounded-full text-sm transition-all inline-flex items-center gap-2 mt-2">
+      <h3 className="text-[18px] font-semibold" style={{ color: 'var(--text-primary)' }}>
+        No meeting sessions yet
+      </h3>
+
+      <p className="text-[14px] max-w-sm" style={{ color: 'var(--text-muted)' }}>
+        Meetings you host or participate in will appear here with chat transcripts and participant logs.
+      </p>
+
+      <Link
+        to="/dashboard"
+        className="mt-2 h-10 px-5 rounded-lg text-[14px] font-medium text-white flex items-center gap-1.5 transition-colors duration-150 cursor-pointer"
+        style={{ backgroundColor: '#2B5CF0' }}
+        onMouseEnter={e => e.currentTarget.style.backgroundColor = '#3A6AF5'}
+        onMouseLeave={e => e.currentTarget.style.backgroundColor = '#2B5CF0'}
+      >
         Start a Meeting
-        <ArrowRightIcon className="w-4 h-4" />
+        <ArrowRight className="w-4 h-4" strokeWidth={1.5} />
       </Link>
     </div>
   )
 }
 
 export default EmptySessions
+

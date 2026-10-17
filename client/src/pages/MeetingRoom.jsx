@@ -13,6 +13,7 @@ import { useAuth, useUser } from '@clerk/react'
 import { useMemo } from 'react'
 import Loader from "../components/Loader.jsx"
 import api from '../config/api.js'
+import Logo from '../components/Logo.jsx'
 
 const MeetingRoom = () => {
   const { meetingId } = useParams()
@@ -75,6 +76,23 @@ const MeetingRoom = () => {
   const { messages, sendMessage, unreadCount, isChatOpen, toggleChat } = useChat(meetingId,
     userdata)
 
+  const handleToggleParticipants = () => {
+    setIsParticipantsOpen((prev) => {
+      const next = !prev;
+      if (next && isChatOpen) {
+        toggleChat();
+      }
+      return next;
+    });
+  };
+
+  const handleToggleChat = () => {
+    if (!isChatOpen && isParticipantsOpen) {
+      setIsParticipantsOpen(false);
+    }
+    toggleChat();
+  };
+
   const hostId = meeting?.host?.id || meeting?.host;
   const isHost = Boolean(userdata?.id && hostId && hostId.toString() === userdata.id.toString())
 
@@ -94,16 +112,59 @@ const MeetingRoom = () => {
   }
 
   return (
-    <div className='h-screen w-screen bg-slate-100 text-slate-900 flex flex-col overflow-hidden relative font-sans'>
-      {/* Top Bar */}
-      <header className="w-full bg-white/90 backdrop-blur-md px-6 py-3 border-b border-slate-200 flex items-center justify-between z-30 shadow-xs">
-        <div className="flex items-center gap-3">
-          <h2 className="text-base font-semibold text-slate-900 tracking-tight">
-            {dummyMeetingDetails.title} ({meetingId || dummyMeetingDetails.meetingId})
-          </h2>
-          <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+    <div
+      className="fixed inset-0 z-50 h-screen w-screen flex flex-col overflow-hidden"
+      style={{ backgroundColor: 'var(--bg-page)', color: 'var(--text-primary)' }}
+    >
+      {/* Top Bar (48px, solid background, bottom 1px border) */}
+      <header
+        className="w-full px-4 sm:px-5 flex items-center justify-between z-30 shrink-0"
+        style={{
+          backgroundColor: 'var(--bg-card)',
+          borderBottom: '1px solid var(--border)',
+          height: '54px',
+        }}
+      >
+        <div className="flex items-center gap-3 min-w-0">
+          {/* Icon-only Logo */}
+          <span className="shrink-0" style={{ color: 'var(--text-primary)' }}>
+            <Logo size={22} iconOnly />
+          </span>
+
+          {/* Meeting title (16px/600) */}
+          <h1
+            className="text-[16px] font-semibold truncate"
+            style={{ color: 'var(--text-primary)' }}
+          >
+            {meeting?.title || dummyMeetingDetails.title || "Meeting Room"}
+          </h1>
+
+          {/* Monospace meeting ID chip */}
+          <span
+            className="text-[12px] font-mono px-2 py-0.5 rounded border shrink-0 hidden sm:inline-block"
+            style={{
+              backgroundColor: 'var(--bg-section)',
+              borderColor: 'var(--border)',
+              color: 'var(--text-muted)',
+            }}
+          >
+            {meetingId || dummyMeetingDetails.meetingId}
+          </span>
+        </div>
+
+        {/* Right: Live indicator with gently pulsing green dot */}
+        {/* UI note: elapsed timer skipped as project does not provide call duration in state */}
+        <div className="flex items-center gap-2 shrink-0">
+          <span
+            className="flex items-center gap-1.5 text-[13px] font-medium"
+            style={{ color: '#22C55E' }}
+          >
+            <span className="w-2.5 h-2.5 rounded-full bg-[#22C55E] animate-live-pulse" />
+            Live
+          </span>
         </div>
       </header>
+
       {/* Main Content Area (Video Grid + Side Panels) */}
       <div className="flex-1 flex overflow-hidden relative">
         {/* Video Grid Center */}
@@ -117,7 +178,7 @@ const MeetingRoom = () => {
         {/* In-Meeting Chat Drawer */}
         <ChatPanel
           isOpen={isChatOpen}
-          onClose={toggleChat}
+          onClose={handleToggleChat}
           messages={messages}
           onSendMessage={sendMessage}
           currentUser={userdata}
@@ -140,8 +201,8 @@ const MeetingRoom = () => {
         videoEnabled={videoEnabled}
         onToggleAudio={toggleAudio}
         onToggleVideo={toggleVideo}
-        onToggleChat={toggleChat}
-        onToggleParticipants={() => setIsParticipantsOpen((prev) => !prev)}
+        onToggleChat={handleToggleChat}
+        onToggleParticipants={handleToggleParticipants}
         isChatOpen={isChatOpen}
         isParticipantsOpen={isParticipantsOpen}
         unreadCount={unreadCount}

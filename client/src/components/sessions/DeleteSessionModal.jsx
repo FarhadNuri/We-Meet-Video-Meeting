@@ -1,77 +1,135 @@
 import React from 'react';
-import { XIcon, Trash2Icon, AlertTriangleIcon } from 'lucide-react';
+import { X, Trash2, AlertTriangle, Loader2 } from 'lucide-react';
 
 const DeleteSessionModal = ({ session, isOwner, isOpen, onClose, onConfirm, isDeleting }) => {
     if (!isOpen || !session) return null;
 
     return (
-        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
-            <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 flex flex-col space-y-5 animate-in fade-in zoom-in duration-150">
-                {/* Header */}
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60">
+            <div
+                className="rounded-[12px] max-w-md w-full p-5 sm:p-6 flex flex-col gap-4 animate-modal-in"
+                style={{
+                    backgroundColor: 'var(--bg-elevated)',
+                    border: '1px solid var(--border)',
+                    boxShadow: '0 20px 60px rgba(0,0,0,0.4)',
+                }}
+            >
+                {/* Top: 40px circular container with soft red tint + Trash2 icon & Close button */}
                 <div className="flex items-start justify-between">
-                    <div className="size-11 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center">
-                        <Trash2Icon className="w-5 h-5" />
-                    </div>
-                    <button
-                        onClick={onClose}
-                        disabled={isDeleting}
-                        className="p-2 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors cursor-pointer disabled:opacity-50"
-                        aria-label="Close"
+                    <div
+                        className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
+                        style={{ backgroundColor: 'rgba(239,68,68,0.12)', color: '#EF4444' }}
                     >
-                        <XIcon className="w-5 h-5" />
-                    </button>
-                </div>
-
-                {/* Content */}
-                <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                        <h3 className="text-xl font-medium text-slate-900">
-                            {isOwner ? "Delete Meeting" : "Remove from Sessions"}
-                        </h3>
-                        <span className={`text-[10px] font-semibold uppercase px-2 py-0.5 rounded-md ${isOwner ? "bg-amber-500/10 text-amber-600" : "bg-slate-500/10 text-slate-600"
-                            }`}>
-                            {isOwner ? "Host" : "Participant"}
-                        </span>
+                        <Trash2 className="w-5 h-5" strokeWidth={1.5} />
                     </div>
 
-                    <p className="text-sm text-slate-600 leading-relaxed">
-                        {isOwner ? (
-                            <>
-                                As the owner of this meeting, deleting it will permanently remove the meeting for all participants.
-                            </>
-                        ) : (
-                            <>
-                                This will remove this meeting from your session history.
-                            </>
-                        )}
-                    </p>
-                </div>
-
-                {/* Warning note if owner */}
-                {isOwner && (
-                    <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-red-50/70 border border-red-100/80 text-xs text-red-700">
-                        <AlertTriangleIcon className="w-4 h-4 shrink-0" />
-                        <span>This action cannot be undone. All messages and logs will be lost.</span>
-                    </div>
-                )}
-
-                {/* Actions */}
-                <div className="flex items-center justify-end gap-3 pt-2">
                     <button
                         type="button"
                         onClick={onClose}
                         disabled={isDeleting}
-                        className="px-5 py-2.5 rounded-full text-xs font-medium text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer disabled:opacity-50"
+                        className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors duration-150 cursor-pointer disabled:opacity-50"
+                        style={{ color: 'var(--text-muted)' }}
+                        onMouseEnter={e => {
+                            e.currentTarget.style.backgroundColor = 'var(--bg-section)';
+                            e.currentTarget.style.color = 'var(--text-primary)';
+                        }}
+                        onMouseLeave={e => {
+                            e.currentTarget.style.backgroundColor = 'transparent';
+                            e.currentTarget.style.color = 'var(--text-muted)';
+                        }}
+                        aria-label="Close"
+                    >
+                        <X className="w-4 h-4" strokeWidth={1.5} />
+                    </button>
+                </div>
+
+                {/* Title + Role pill */}
+                <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                        <h3 className="text-[18px] font-semibold" style={{ color: 'var(--text-primary)' }}>
+                            {isOwner ? "Delete Meeting" : "Remove from Sessions"}
+                        </h3>
+                        {isOwner ? (
+                            <span
+                                className="text-[12px] font-medium px-2 py-0.5 rounded border"
+                                style={{
+                                    backgroundColor: 'rgba(245,158,11,0.12)',
+                                    color: '#F59E0B',
+                                    borderColor: 'rgba(245,158,11,0.25)',
+                                }}
+                            >
+                                Host
+                            </span>
+                        ) : (
+                            <span
+                                className="text-[12px] font-medium px-2 py-0.5 rounded border"
+                                style={{
+                                    backgroundColor: 'rgba(107,114,128,0.1)',
+                                    color: 'var(--text-muted)',
+                                    borderColor: 'var(--border)',
+                                }}
+                            >
+                                Participant
+                            </span>
+                        )}
+                    </div>
+
+                    {/* Description */}
+                    <p className="text-[14px] leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                        {isOwner
+                            ? "Deleting this meeting will permanently delete the meeting, all messages, and participant records for everyone."
+                            : "Removing this meeting only hides it from your private session history. Other participants are not affected."}
+                    </p>
+                </div>
+
+                {/* Host only: red-tinted callout box */}
+                {isOwner && (
+                    <div
+                        className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[13px] font-medium"
+                        style={{
+                            backgroundColor: 'rgba(239,68,68,0.08)',
+                            border: '1px solid rgba(239,68,68,0.2)',
+                            color: '#EF4444',
+                        }}
+                    >
+                        <AlertTriangle className="w-4 h-4 shrink-0" strokeWidth={1.5} />
+                        <span>This action cannot be undone.</span>
+                    </div>
+                )}
+
+                {/* Footer buttons */}
+                <div className="flex items-center justify-end gap-2.5 pt-2">
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        disabled={isDeleting}
+                        className="h-10 px-4 rounded-lg text-[14px] font-medium transition-colors duration-150 cursor-pointer disabled:opacity-50"
+                        style={{
+                            backgroundColor: 'var(--bg-section)',
+                            border: '1px solid var(--border)',
+                            color: 'var(--text-primary)',
+                        }}
+                        onMouseEnter={e => !isDeleting && (e.currentTarget.style.backgroundColor = 'var(--bg-card)')}
+                        onMouseLeave={e => !isDeleting && (e.currentTarget.style.backgroundColor = 'var(--bg-section)')}
                     >
                         Cancel
                     </button>
+
                     <button
                         type="button"
                         onClick={onConfirm}
                         disabled={isDeleting}
-                        className="px-5 py-2.5 rounded-full text-xs font-medium text-white bg-red-600 hover:bg-red-700 shadow-xs transition-all cursor-pointer disabled:opacity-50 flex items-center gap-2"
+                        className="h-10 px-4 rounded-lg text-[14px] font-medium text-white transition-colors duration-150 cursor-pointer disabled:opacity-50 flex items-center gap-1.5"
+                        style={{ backgroundColor: '#EF4444' }}
+                        onMouseEnter={e => !isDeleting && (e.currentTarget.style.backgroundColor = '#DC2626')}
+                        onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#EF4444')}
                     >
-                        {isDeleting ? "Deleting..." : isOwner ? "Delete Permanently" : "Delete Meeting"}
+                        {isDeleting && <Loader2 className="w-4 h-4 animate-spin" />}
+                        {isDeleting
+                            ? "Deleting..."
+                            : isOwner
+                            ? "Delete Permanently"
+                            : "Remove"}
                     </button>
                 </div>
             </div>
