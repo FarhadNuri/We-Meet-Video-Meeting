@@ -1,38 +1,118 @@
 @import url('https://fonts.googleapis.com/css2?family=Geist+Mono:ital,wght@0,100..900;1,100..900&family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
 @import "tailwindcss";
 
+/* ── Design tokens ── */
 @theme {
-    --color-primary: #004cff;
-    --color-primary-hover: #0033ad;
-    --color-primary-light: #d9e4ff;
-    --color-primary-border: #7a9cff;
+  --color-accent:        #2B5CF0;
+  --color-accent-hover:  #3A6AF5;
+  --color-primary:       #2B5CF0;
+  --color-primary-hover: #3A6AF5;
+  --color-primary-light: #dbeafe;
+  --color-primary-border:#93c5fd;
+  --font-sans: "Urbanist", sans-serif;
+  --font-mono: "Geist Mono", monospace;
 }
+
+/* ── Light mode defaults ── */
+:root {
+  --bg-page:        #FFFFFF;
+  --bg-section:     #F7F8FA;
+  --bg-card:        #FFFFFF;
+  --bg-elevated:    #FFFFFF;
+  --border:         #E2E8F0;
+  --text-primary:   #0F172A;
+  --text-secondary: #334155;
+  --text-muted:     #64748B;
+  --scrollbar-thumb: #CBD5E1;
+  --scrollbar-hover: #94A3B8;
+}
+
 @layer base {
-    * {
-        font-family: "Urbanist", sans-serif;
-        box-sizing: border-box;
-    }
-
-    body {
-        @apply bg-slate-50 text-slate-900 antialiased min-h-screen selection:bg-primary/20 selection:text-primary-hover;
-    }
+  html {
+    font-size: 16.5px;
+  }
+  * {
+    font-family: "Urbanist", sans-serif;
+    box-sizing: border-box;
+  }
+  body {
+    background-color: var(--bg-page);
+    color: var(--text-primary);
+    font-size: 15px;
+    line-height: 1.5;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color 150ms ease, color 150ms ease;
+  }
+  ::selection {
+    background-color: rgba(43,92,240,0.12);
+    color: #2B5CF0;
+  }
 }
 
-/* Custom Scrollbar for Light Mode */
-::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+/* ── Token utility classes ── */
+.bg-page      { background-color: var(--bg-page); }
+.bg-section   { background-color: var(--bg-section); }
+.bg-card      { background-color: var(--bg-card); }
+.bg-elevated  { background-color: var(--bg-elevated); }
+.border-token { border-color: var(--border); }
+.text-token-primary   { color: var(--text-primary); }
+.text-token-secondary { color: var(--text-secondary); }
+.text-token-muted     { color: var(--text-muted); }
+.font-mono { font-family: "Geist Mono", monospace; }
+
+/* ── Live status dot pulse ── */
+@keyframes live-pulse {
+  0%, 100% { opacity: 1;   transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(1.3); }
+}
+.animate-live-pulse { animation: live-pulse 2s ease-in-out infinite; }
+
+/* ── Loader ring spin ── */
+@keyframes wm-spin { to { transform: rotate(360deg); } }
+.animate-wm-spin { animation: wm-spin 0.8s linear infinite; }
+
+/* ── Modal entry ── */
+@keyframes modal-in {
+  from { opacity: 0; transform: scale(0.96) translateY(4px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0); }
+}
+.animate-modal-in { animation: modal-in 0.15s ease-out forwards; }
+
+/* ── Progress bar ── */
+.progress-track {
+  height: 4px;
+  border-radius: 9999px;
+  background-color: var(--border);
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 9999px;
+  background-color: #2B5CF0;
+  transition: width 0.4s ease;
+}
+.progress-fill-amber { background-color: #F59E0B; }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar         { width: 5px; height: 5px; }
+::-webkit-scrollbar-track   { background: transparent; }
+::-webkit-scrollbar-thumb   { background: var(--scrollbar-thumb); border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-hover); }
+
+/* ── Focus ring ── */
+:focus-visible { outline: 2px solid #2B5CF0; outline-offset: 2px; }
+
+/* ── Suppress Clerk's secondary loading bar / skeleton in PricingTable ── */
+.cl-loading,
+.cl-loading-bar,
+.cl-internal-loading,
+.cl-skeleton,
+.cl-pricingTable-loading,
+[class*="loading-bar"],
+[class*="loadingBar"],
+[data-clerk-loading] {
+  display: none !important;
 }
 
-::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 9999px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
-}
