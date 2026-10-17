@@ -114,14 +114,16 @@ export const getUserSessions = async (req, res) => {
     try {
         const userId = req.user.id;
 
-        // Fetch meetings where user is host OR listed in participants
+        // Fetch meetings where user is host OR listed in participants, excluding hidden meetings
         const meetings = await sql`
       SELECT DISTINCT m.id, m.meeting_id, m.title, m.status, m.created_at, m.ended_at,
              m.host_id, u.name as host_name, u.email as host_email
       FROM meetings m
       JOIN users u ON m.host_id = u.id
       LEFT JOIN meeting_participants mp ON m.id = mp.meeting_id
-      WHERE m.host_id = ${userId} OR mp.user_id = ${userId}
+      LEFT JOIN hidden_meetings hm ON hm.meeting_id = m.id AND hm.user_id = ${userId}
+      WHERE (m.host_id = ${userId} OR mp.user_id = ${userId})
+        AND hm.id IS NULL
       ORDER BY m.created_at DESC
     `;
 
@@ -200,6 +202,15 @@ export const getSessionDetails = async (req, res) => {
         const m = meetings[0];
 
         if (m.host_id !== userId) {
+            const hidden = await sql`
+                SELECT 1 FROM hidden_meetings
+                WHERE meeting_id = ${m.id} AND user_id = ${userId}
+                LIMIT 1
+            `;
+            if (hidden.length > 0) {
+                return res.status(404).json({ error: "Session details not found" });
+            }
+
             const membership = await sql`
     SELECT 1 FROM meeting_participants
     WHERE meeting_id = ${m.id} AND user_id = ${userId} LIMIT 1`;
@@ -281,5 +292,64 @@ export const getMeetingStats = async (req, res) => {
     } catch (error) {
         console.log("Meeting stats fetching failed: ", error)
         res.status(500).json({ error: "Failed to get meeting stats." })
+    }
+};
+
+// delete or hide meeting session
+export const deleteMeetingSession = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const userId = req.user.id;
+
+        // Find the meeting by numeric id or string meeting_id
+        let meetings;
+        if (/^\d+$/.test(id)) {
+            meetings = await sql`
+                SELECT id, meeting_id, host_id FROM meetings
+                WHERE id = ${parseInt(id, 10)} OR meeting_id = ${id}
+            `;
+        } else {
+            meetings = await sql`
+                SELECT id, meeting_id, host_id FROM meetings
+                WHERE meeting_id = ${id}
+            `;
+        }
+
+        if (meetings.length === 0) {
+            return res.status(404).json({ error: "Meeting not found" });
+        }
+
+        const meeting = meetings[0];
+        const isOwner = meeting.host_id === userId;
+
+        if (isOwner) {
+            // Delete messages, participants, hidden records, and the meeting itself
+            await sql`DELETE FROM meeting_messages WHERE meeting_id = ${meeting.id}`;
+            await sql`DELETE FROM meeting_participants WHERE meeting_id = ${meeting.id}`;
+            await sql`DELETE FROM hidden_meetings WHERE meeting_id = ${meeting.id}`;
+            await sql`DELETE FROM meetings WHERE id = ${meeting.id}`;
+
+            return res.status(200).json({
+                success: true,
+                isOwner: true,
+                message: "Meeting deleted",
+            });
+        } else {
+            // Non-owner: hide the meeting from this user
+            await sql`
+                INSERT INTO hidden_meetings (user_id, meeting_id)
+                VALUES (${userId}, ${meeting.id})
+                ON CONFLICT (user_id, meeting_id) DO NOTHING
+            `;
+
+            return res.status(200).json({
+                success: true,
+                isOwner: false,
+                message: "Meeting deleted",
+            });
+        }
+    } catch (error) {
+        console.error("Delete meeting session failed: ", error);
+        res.status(500).json({ error: "Failed to delete meeting session." });
     }
 };
