@@ -1,16 +1,4 @@
-import { VideoIcon } from 'lucide-react'
 import React from 'react'
-
-const Loader = ({text = "Loading..."}) => {
-  return (
-    <div className="fixed inset-0 flex flex-col items-center justify-center bg-slate-50 text-slate-900 z-50">
-      <div className="relative flex items-center justify-center">
-        <div className='"w-16 h-16 rounded-full border-4 border-primary-light border-t-primary animate-spin'/>
-        <VideoIcon className="w-6 h-6 text-primary absolute" />
-      </div>
-      <p className="mt-4 text-sm font-semibold text-slate-600 animate-pulse">{text}</p>
-    </div>
-  )
-}
-
+import Logo from './Logo'
+const Loader = ({ text = 'Loading...' }) => <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background text-foreground"><div className="relative flex size-10 items-center justify-center rounded-full border-2 border-border border-t-primary animate-spin"><Logo size="sm" iconOnly className="text-primary" /></div><p className="mt-4 text-xs font-medium text-muted-foreground animate-pulse">{text}</p><Logo size="sm" iconOnly className="sr-only" /></div>
 export default Loader

@@ -1,70 +1,13 @@
-import React from 'react'
-import { dummyUser } from '../assets/asset'
-import { useLocation, Link } from 'react-router-dom'
-import { LayoutDashboard, History, CreditCard } from 'lucide-react'
+import React, { useEffect, useState } from 'react'
+import { Link, useLocation } from 'react-router-dom'
+import { LayoutDashboard, History, CreditCard, Moon, Sun } from 'lucide-react'
 import { UserButton, useUser } from '@clerk/react'
+import Logo from './Logo'
 
 const Navbar = () => {
-  const { isSignedIn, user } = useUser()
-  const location = useLocation()
-  const userName = user?.fullName || user?.firstName || user?.primaryEmailAddress?.emailAddress?.split("@")[0] || "User";
-
-  return (
-    <header className="w-full max-w-305 mx-auto bg-white/90 backdrop-blur xl:rounded-b-xl sticky top-0 z-40 px-6 py-4 flex items-center justify-between border border-slate-200">
-      {/* Brand Logo & Navigation Links */}
-      <div className='flex items-center gap-6'>
-        <Link to='/dashboard' className='flex items-center gap-1.5'>
-          <img src="/logo.svg" alt="MeetUp Logo" className="size-6.5" />
-          <span className='text-2xl font-medium tracking-tight text-slate-900 flex items-center'>
-            We Meet<span className="text-primary">.</span>
-          </span>
-        </Link>
-
-        {isSignedIn && (
-          <nav className="hidden md:flex items-center gap-1.5 ml-2">
-            <Link to="/dashboard"
-              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 ${location.pathname === '/dashboard'
-                  ? "ring ring-blue-100 bg-blue-50 text-slate-800"
-                  : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
-                }`}>
-              <LayoutDashboard className="w-3.5 h-3.5" />
-              Dashboard
-            </Link>
-
-            <Link to="/sessions"
-              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 ${location.pathname === '/sessions'
-                  ? "ring ring-blue-100 bg-blue-50 text-slate-800"
-                  : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
-                }`}>
-              <History className="w-3.5 h-3.5" />
-              Sessions
-            </Link>
-
-            <Link to="/pricing"
-              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-1.5 ${location.pathname === '/pricing'
-                  ? "ring ring-blue-100 bg-blue-50 text-slate-800"
-                  : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
-                }`}>
-              <CreditCard className="w-3.5 h-3.5" />
-              Pricing
-            </Link>
-          </nav>
-        )}
-      </div>
-
-      {/* Right Profile / UserButton */}
-      {isSignedIn && (
-        <div className='flex items-center gap-4'>
-          <Link to="/sessions" className='md:hidden text-xs font-medium text-slate-600 hover:text-primary flex items-center gap-1'>
-            <History className="w-4 h-4" />
-            Sessions
-          </Link>
-          <span className='font-medium hidden sm:inline tracking-wide text-sm text-slate-700'>Welcome, {userName}</span>
-          <UserButton afterSignOutUrl="/login" />
-        </div>
-      )}
-    </header>
-  )
+  const { isSignedIn, user } = useUser(); const location = useLocation(); const [dark, setDark] = useState(() => document.documentElement.classList.contains('dark'))
+  useEffect(() => { document.documentElement.classList.toggle('dark', dark) }, [dark])
+  const items = [[LayoutDashboard, 'Dashboard', '/dashboard'], [History, 'Sessions', '/sessions'], [CreditCard, 'Pricing', '/pricing']]
+  return <header className="sticky top-0 z-40 flex h-14 shrink-0 items-center justify-between border-b border-border bg-background px-5 md:px-8"><div className="flex items-center gap-6"><Link to="/dashboard" aria-label="We Meet home"><Logo size="md" /></Link>{isSignedIn && <nav className="hidden items-center gap-1 md:flex">{items.map(([Icon, label, path]) => <Link key={path} to={path} className={`flex items-center gap-2 rounded-md px-2.5 py-1.5 text-xs transition ${location.pathname === path ? 'bg-muted text-foreground' : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'}`}><Icon className="size-4" />{label}</Link>)}</nav>}</div>{isSignedIn && <div className="flex items-center gap-3"><button onClick={() => setDark(value => !value)} className="inline-flex size-8 items-center justify-center rounded-md text-muted-foreground transition hover:bg-muted hover:text-foreground" aria-label="Toggle theme">{dark ? <Sun className="size-4" /> : <Moon className="size-4" />}</button><span className="hidden text-xs text-muted-foreground sm:inline">{user?.fullName || 'Farhad Nuri'}</span><UserButton afterSignOutUrl="/login" /></div>}</header>
 }
-
 export default Navbar

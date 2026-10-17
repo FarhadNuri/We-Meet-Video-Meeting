@@ -1,6 +1,7 @@
 import { SignUp, SignIn, useUser } from '@clerk/react';
 import React from 'react'
 import { Navigate } from 'react-router-dom';
+import Logo from '../components/Logo';
 
 const Login = ({mode = "login"}) => {
 
@@ -12,7 +13,8 @@ const Login = ({mode = "login"}) => {
     }
 
     return (
-        <div className="min-h-screen w-full bg-[url('/login_bg.png')] text-slate-800 p-4 md:p-6 lg:p-8 flex items-center justify-center font-sans">
+        <div className="min-h-screen w-full bg-background text-foreground p-4 md:p-6 lg:p-8 flex flex-col items-center justify-center font-sans gap-6">
+            <Logo size="lg" />
             <div className='w-full flex justify-center py-2'>
                 {isRegister ? (
                     <SignUp routing="path" path="/register" signInUrl="/login"

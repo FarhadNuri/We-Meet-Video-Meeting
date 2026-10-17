@@ -13,6 +13,7 @@ import { useAuth, useUser } from '@clerk/react'
 import { useMemo } from 'react'
 import Loader from "../components/Loader.jsx"
 import api from '../config/api.js'
+import Logo from '../components/Logo.jsx'
 
 const MeetingRoom = () => {
   const { meetingId } = useParams()
@@ -98,6 +99,7 @@ const MeetingRoom = () => {
       {/* Top Bar */}
       <header className="w-full bg-white/90 backdrop-blur-md px-6 py-3 border-b border-slate-200 flex items-center justify-between z-30 shadow-xs">
         <div className="flex items-center gap-3">
+          <Logo size="sm" iconOnly />
           <h2 className="text-base font-semibold text-slate-900 tracking-tight">
             {dummyMeetingDetails.title} ({meetingId || dummyMeetingDetails.meetingId})
           </h2>

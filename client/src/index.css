@@ -1,38 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:ital,wght@0,100..900;1,100..900&family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600&family=Urbanist:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&display=swap');
 @import "tailwindcss";
-
-@theme {
-    --color-primary: #004cff;
-    --color-primary-hover: #0033ad;
-    --color-primary-light: #d9e4ff;
-    --color-primary-border: #7a9cff;
-}
-@layer base {
-    * {
-        font-family: "Urbanist", sans-serif;
-        box-sizing: border-box;
-    }
-
-    body {
-        @apply bg-slate-50 text-slate-900 antialiased min-h-screen selection:bg-primary/20 selection:text-primary-hover;
-    }
-}
-
-/* Custom Scrollbar for Light Mode */
-::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-}
-
-::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 9999px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
-}
+@custom-variant dark (&:where(.dark, .dark *));
+@theme { --color-primary: #2b5cf0; --color-primary-foreground: #fff; --color-background: #ffffff; --color-foreground: #0f172a; --color-card: #ffffff; --color-muted: #f7f8fa; --color-muted-foreground: #64748b; --color-border: #e5e7eb; --color-destructive: #ef4444; }
+.dark { --color-background: #0a0b0f; --color-foreground: #f3f4f6; --color-card: #12141a; --color-muted: #161920; --color-muted-foreground: #9ca3af; --color-border: #1f222b; }
+@layer base { * { box-sizing: border-box; font-family: "Urbanist", sans-serif; } body { margin: 0; min-width: 320px; background: var(--color-background); color: var(--color-foreground); } button, a, input { font: inherit; } }
+.logo-mark { filter: brightness(0); } .dark .logo-mark { filter: brightness(0) invert(1); }

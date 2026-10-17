@@ -3,14 +3,5 @@ import { Outlet } from 'react-router-dom'
 import Navbar from './Navbar'
 import Footer from './Footer'
 
-const ProtectedLayout = () => {
-  return (
-    <div className="h-screen overflow-y-scroll bg-slate-50 text-slate-900 flex flex-col font-sans bg-[url('/layout_bg.png')] bg-cover bg-center bg-no-repeat">
-      <Navbar/>
-      <Outlet />
-      <Footer/>
-    </div>
-  )
-}
-
+const ProtectedLayout = () => <div className="flex min-h-screen flex-col bg-background text-foreground"><Navbar /><div className="flex flex-1 flex-col"><Outlet /></div><Footer /></div>
 export default ProtectedLayout
