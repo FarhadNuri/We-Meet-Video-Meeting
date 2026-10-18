@@ -22,21 +22,27 @@ const ChatPanel = ({ isOpen, onClose, messages = [], onSendMessage, currentUser 
     if (!isOpen) return null;
 
     return (
-        <aside
-            className="fixed sm:absolute right-0 bottom-0 sm:top-0 z-50 w-full sm:w-[380px] h-[75vh] sm:h-full rounded-t-2xl sm:rounded-none flex flex-col border-t sm:border-t-0 sm:border-l transition-transform duration-200 ease-out shadow-2xl"
-            style={{
-                backgroundColor: 'var(--bg-elevated)',
-                borderColor: 'var(--border)',
-            }}
-        >
-            {/* Header: "In-call messages" + X close button */}
+        <>
+            {/* Mobile backdrop */}
             <div
-                className="px-5 py-3.5 border-b flex items-center justify-between shrink-0"
-                style={{ borderColor: 'var(--border)' }}
+                className="fixed inset-0 bg-black/50 z-40 sm:hidden transition-opacity"
+                onClick={onClose}
+            />
+            <aside
+                className="fixed sm:absolute right-0 bottom-0 sm:top-0 z-50 w-full sm:w-[380px] h-[82vh] sm:h-full rounded-t-2xl sm:rounded-none flex flex-col border-t sm:border-t-0 sm:border-l transition-transform duration-200 ease-out shadow-2xl"
+                style={{
+                    backgroundColor: 'var(--bg-elevated)',
+                    borderColor: 'var(--border)',
+                }}
             >
-                <h3 className="text-[16px] font-semibold" style={{ color: 'var(--text-primary)' }}>
-                    In-call messages
-                </h3>
+                {/* Header: "In-call messages" + X close button */}
+                <div
+                    className="px-4 sm:px-5 py-3 sm:py-3.5 border-b flex items-center justify-between shrink-0"
+                    style={{ borderColor: 'var(--border)' }}
+                >
+                    <h3 className="text-[15px] sm:text-[16px] font-semibold" style={{ color: 'var(--text-primary)' }}>
+                        In-call messages
+                    </h3>
                 <button
                     type="button"
                     onClick={onClose}
@@ -180,6 +186,7 @@ const ChatPanel = ({ isOpen, onClose, messages = [], onSendMessage, currentUser 
                 </button>
             </form>
         </aside>
+        </>
     )
 }
 
