@@ -8,7 +8,7 @@ export function setupSocketIO(io) {
         let currentUser = null;
 
         // User joins a meeting room
-        socket.on("join-room", async ({ roomId, user, audioEnabled = true, videoEnabled = true }) => {
+        socket.on("join-room", async ({ roomId, user, audioEnabled = false, videoEnabled = false }) => {
             try {
                 // Verify meeting status from DB
                 const meetings = await sql`SELECT * FROM meetings WHERE meeting_id = ${roomId}`;
