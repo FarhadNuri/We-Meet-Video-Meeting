@@ -116,24 +116,24 @@ const MeetingRoom = () => {
       className="fixed inset-0 z-50 h-screen w-screen flex flex-col overflow-hidden"
       style={{ backgroundColor: 'var(--bg-page)', color: 'var(--text-primary)' }}
     >
-      {/* Top Bar (48px, solid background, bottom 1px border) */}
+      {/* Top Bar (48px-54px, solid background, bottom 1px border) */}
       <header
-        className="w-full px-4 sm:px-5 flex items-center justify-between z-30 shrink-0"
+        className="w-full px-3 sm:px-5 flex items-center justify-between z-30 shrink-0"
         style={{
           backgroundColor: 'var(--bg-card)',
           borderBottom: '1px solid var(--border)',
-          height: '54px',
+          height: '52px',
         }}
       >
-        <div className="flex items-center gap-3 min-w-0">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0 pr-2">
           {/* Icon-only Logo */}
           <span className="shrink-0" style={{ color: 'var(--text-primary)' }}>
-            <Logo size={22} iconOnly />
+            <Logo size={20} iconOnly />
           </span>
 
-          {/* Meeting title (16px/600) */}
+          {/* Meeting title (15px-16px font) */}
           <h1
-            className="text-[16px] font-semibold truncate"
+            className="text-[14px] sm:text-[16px] font-semibold truncate max-w-[150px] xs:max-w-[220px] sm:max-w-md"
             style={{ color: 'var(--text-primary)' }}
           >
             {meeting?.title || dummyMeetingDetails.title || "Meeting Room"}
@@ -141,7 +141,7 @@ const MeetingRoom = () => {
 
           {/* Monospace meeting ID chip */}
           <span
-            className="text-[12px] font-mono px-2 py-0.5 rounded border shrink-0 hidden sm:inline-block"
+            className="text-[11px] sm:text-[12px] font-mono px-2 py-0.5 rounded border shrink-0 hidden md:inline-block"
             style={{
               backgroundColor: 'var(--bg-section)',
               borderColor: 'var(--border)',
@@ -153,13 +153,12 @@ const MeetingRoom = () => {
         </div>
 
         {/* Right: Live indicator with gently pulsing green dot */}
-        {/* UI note: elapsed timer skipped as project does not provide call duration in state */}
         <div className="flex items-center gap-2 shrink-0">
           <span
-            className="flex items-center gap-1.5 text-[13px] font-medium"
+            className="flex items-center gap-1.5 text-[12px] sm:text-[13px] font-medium"
             style={{ color: '#22C55E' }}
           >
-            <span className="w-2.5 h-2.5 rounded-full bg-[#22C55E] animate-live-pulse" />
+            <span className="w-2 sm:w-2.5 h-2 sm:h-2.5 rounded-full bg-[#22C55E] animate-live-pulse" />
             Live
           </span>
         </div>

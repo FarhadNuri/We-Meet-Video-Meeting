@@ -31,10 +31,10 @@ const Navbar = () => {
         height: '56px',
       }}
     >
-      <div className="max-w-[1100px] mx-auto h-full px-5 flex items-center justify-between">
+      <div className="max-w-[1100px] mx-auto h-full px-3 sm:px-5 flex items-center justify-between">
 
         {/* Left: Logo + Nav */}
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-2 sm:gap-5">
           <Link to="/dashboard" className="flex items-center text-token-primary" aria-label="We Meet home">
             <Logo size={22} className="text-token-primary" />
           </Link>
@@ -60,24 +60,24 @@ const Navbar = () => {
         </div>
 
         {/* Right: user navigation */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
 
           {isSignedIn && (
             <>
               {/* Mobile icon-only nav links */}
-              <div className="md:hidden flex items-center gap-1">
+              <div className="md:hidden flex items-center gap-0.5 sm:gap-1">
                 {navItems.map(({ to, label, Icon }) => (
                   <Link
                     key={to}
                     to={to}
                     aria-label={label}
-                    className={`w-9 h-9 flex items-center justify-center rounded-md transition-colors duration-150 ${
+                    className={`w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-md transition-colors duration-150 ${
                       isActive(to)
                         ? 'bg-[#2B5CF0]/10 text-[#2B5CF0]'
                         : 'text-token-secondary hover:bg-[var(--bg-section)]'
                     }`}
                   >
-                    <Icon className="w-5 h-5" strokeWidth={1.5} />
+                    <Icon className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={1.5} />
                   </Link>
                 ))}
               </div>
@@ -88,7 +88,9 @@ const Navbar = () => {
               </span>
 
               {/* Clerk UserButton */}
-              <UserButton afterSignOutUrl="/login" />
+              <div className="shrink-0">
+                <UserButton afterSignOutUrl="/login" />
+              </div>
             </>
           )}
         </div>
