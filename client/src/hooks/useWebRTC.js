@@ -2,14 +2,39 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { socket } from "../config/socket.js";
 import toast from "react-hot-toast";
 
+const METERED_USERNAME = import.meta.env.VITE_METERED_USERNAME;
+const METERED_CREDENTIAL = import.meta.env.VITE_METERED_CREDENTIAL;
+
 const ICE_SERVERS = {
     iceServers: [
         { urls: "stun:stun.l.google.com:19302" },
         { urls: "stun:stun1.l.google.com:19302" },
-        { urls: "stun:stun2.l.google.com:19302" },
-        { urls: "stun:stun3.l.google.com:19302" },
-        { urls: "stun:stun4.l.google.com:19302" },
         { urls: "stun:stun.cloudflare.com:3478" },
+        { urls: "stun:stun.relay.metered.ca:80" },
+        ...(METERED_USERNAME && METERED_CREDENTIAL
+            ? [
+                  {
+                      urls: "turn:global.relay.metered.ca:80",
+                      username: METERED_USERNAME,
+                      credential: METERED_CREDENTIAL,
+                  },
+                  {
+                      urls: "turn:global.relay.metered.ca:80?transport=tcp",
+                      username: METERED_USERNAME,
+                      credential: METERED_CREDENTIAL,
+                  },
+                  {
+                      urls: "turn:global.relay.metered.ca:443",
+                      username: METERED_USERNAME,
+                      credential: METERED_CREDENTIAL,
+                  },
+                  {
+                      urls: "turns:global.relay.metered.ca:443?transport=tcp",
+                      username: METERED_USERNAME,
+                      credential: METERED_CREDENTIAL,
+                  },
+              ]
+            : []),
     ],
     bundlePolicy: "max-bundle",
 };
