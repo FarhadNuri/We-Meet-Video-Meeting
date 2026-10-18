@@ -16,8 +16,28 @@ const server = http.createServer(app)
 
 await initDB()
 
-const allowedOrigins = process.env.ORIGINS.split(",")
-app.use(cors({origin: allowedOrigins, credentials: true}))
+const rawOrigins = process.env.ORIGINS || "http://localhost:5173,http://localhost:3000";
+const allowedOrigins = rawOrigins
+  .split(",")
+  .map((origin) => origin.trim().replace(/^["']|["']$/g, "").replace(/\/$/, ""))
+  .filter(Boolean);
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    const normalizedOrigin = origin.trim().replace(/\/$/, "");
+    if (allowedOrigins.includes(normalizedOrigin) || allowedOrigins.includes("*")) {
+      return callback(null, true);
+    }
+    console.warn(`[CORS] Blocked request from origin: ${origin}. Allowed origins:`, allowedOrigins);
+    return callback(new Error(`CORS blocked for origin: ${origin}`));
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+  allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
+};
+
+app.use(cors(corsOptions));
 app.use(cookieParser())
 
 app.use("/api/clerk", express.raw({type: "application/json"}), handleClerkWebhook)
@@ -27,8 +47,8 @@ app.use(clerkMiddleware())
 app.get("/", (req, res)=> res.send("API is Live!"))
 app.use('/api/meetings', meetingRouter)
 
-const io = new Server(server,{
-    cors: {origin: allowedOrigins, credentials: true}
+const io = new Server(server, {
+  cors: corsOptions,
 })
 setupSocketIO(io)
 
