@@ -7,7 +7,11 @@ const ICE_SERVERS = {
         { urls: "stun:stun.l.google.com:19302" },
         { urls: "stun:stun1.l.google.com:19302" },
         { urls: "stun:stun2.l.google.com:19302" },
+        { urls: "stun:stun3.l.google.com:19302" },
+        { urls: "stun:stun4.l.google.com:19302" },
+        { urls: "stun:stun.cloudflare.com:3478" },
     ],
+    bundlePolicy: "max-bundle",
 };
 
 export const useWebRTC = (roomId, user, onMeetingEnded, enabled = true) => {
@@ -18,6 +22,23 @@ export const useWebRTC = (roomId, user, onMeetingEnded, enabled = true) => {
 
     const peersRef = useRef(new Map()); // socketId -> RTCPeerConnection
     const localStreamRef = useRef(null);
+    const remoteStreamsRef = useRef(new Map()); // socketId -> MediaStream
+    const pendingCandidatesRef = useRef(new Map()); // socketId -> RTCIceCandidateInit[]
+
+    // Process queued candidates after remote description is set
+    const processPendingCandidates = async (peer, socketId) => {
+        if (pendingCandidatesRef.current.has(socketId)) {
+            const candidates = pendingCandidatesRef.current.get(socketId) || [];
+            pendingCandidatesRef.current.delete(socketId);
+            for (const candidate of candidates) {
+                try {
+                    await peer.addIceCandidate(new RTCIceCandidate(candidate));
+                } catch (err) {
+                    console.error("Error adding queued ICE candidate:", err);
+                }
+            }
+        }
+    };
 
     // Initialize local media stream
     const initLocalStream = useCallback(async () => {
@@ -89,14 +110,27 @@ export const useWebRTC = (roomId, user, onMeetingEnded, enabled = true) => {
 
         // Handle incoming remote stream tracks
         peer.ontrack = (event) => {
-            const remoteStream = event.streams[0];
+            let stream = remoteStreamsRef.current.get(targetSocketId);
+            if (!stream) {
+                stream = event.streams && event.streams[0] ? event.streams[0] : new MediaStream();
+                remoteStreamsRef.current.set(targetSocketId, stream);
+            }
+
+            // Ensure the incoming track is in the persistent MediaStream
+            if (!stream.getTracks().some((t) => t.id === event.track.id)) {
+                stream.addTrack(event.track);
+            }
+
+            // Wrap in a new MediaStream instance so React state change is detected by VideoTile
+            const streamToSet = new MediaStream(stream.getTracks());
+
             setRemoteUsers((prev) => {
                 const existingIndex = prev.findIndex((u) => u.socketId === targetSocketId);
                 if (existingIndex > -1) {
                     const updated = [...prev];
                     updated[existingIndex] = {
                         ...updated[existingIndex],
-                        stream: remoteStream,
+                        stream: streamToSet,
                     };
                     return updated;
                 } else {
@@ -106,7 +140,7 @@ export const useWebRTC = (roomId, user, onMeetingEnded, enabled = true) => {
                             socketId: targetSocketId,
                             userId: targetUser?.userId,
                             userName: targetUser?.userName || "Participant",
-                            stream: remoteStream,
+                            stream: streamToSet,
                             audioEnabled: targetUser?.audioEnabled ?? false,
                             videoEnabled: targetUser?.videoEnabled ?? false,
                         },
@@ -172,6 +206,8 @@ export const useWebRTC = (roomId, user, onMeetingEnded, enabled = true) => {
                 const peer = createPeerConnection(callerSocketId, callerUser);
                 try {
                     await peer.setRemoteDescription(new RTCSessionDescription(sdp));
+                    await processPendingCandidates(peer, callerSocketId);
+
                     const answer = await peer.createAnswer();
                     await peer.setLocalDescription(answer);
 
@@ -191,6 +227,7 @@ export const useWebRTC = (roomId, user, onMeetingEnded, enabled = true) => {
                 if (peer) {
                     try {
                         await peer.setRemoteDescription(new RTCSessionDescription(sdp));
+                        await processPendingCandidates(peer, responderSocketId);
                     } catch (err) {
                         console.error("Error setting remote description from answer:", err);
                     }
@@ -199,13 +236,19 @@ export const useWebRTC = (roomId, user, onMeetingEnded, enabled = true) => {
 
             // 5. Receive ICE candidate
             socket.on("ice-candidate", async ({ senderSocketId, candidate }) => {
+                if (!candidate) return;
                 const peer = peersRef.current.get(senderSocketId);
-                if (peer && candidate) {
+                if (peer && peer.remoteDescription && peer.remoteDescription.type) {
                     try {
                         await peer.addIceCandidate(new RTCIceCandidate(candidate));
                     } catch (err) {
                         console.error("Error adding ICE candidate:", err);
                     }
+                } else {
+                    if (!pendingCandidatesRef.current.has(senderSocketId)) {
+                        pendingCandidatesRef.current.set(senderSocketId, []);
+                    }
+                    pendingCandidatesRef.current.get(senderSocketId).push(candidate);
                 }
             });
 
@@ -229,6 +272,8 @@ export const useWebRTC = (roomId, user, onMeetingEnded, enabled = true) => {
                     peer.close();
                     peersRef.current.delete(socketId);
                 }
+                remoteStreamsRef.current.delete(socketId);
+                pendingCandidatesRef.current.delete(socketId);
                 setRemoteUsers((prev) => prev.filter((u) => u.socketId !== socketId));
             });
 
@@ -255,6 +300,8 @@ export const useWebRTC = (roomId, user, onMeetingEnded, enabled = true) => {
             // Close all peer connections
             peersRef.current.forEach((peer) => peer.close());
             peersRef.current.clear();
+            remoteStreamsRef.current.clear();
+            pendingCandidatesRef.current.clear();
 
             // Off socket listeners
             socket.off("all-users");

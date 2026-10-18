@@ -4,12 +4,50 @@ import { Mic, MicOff } from 'lucide-react'
 const VideoTile = ({ stream, name, isLocal = false, audioEnabled = false, videoEnabled = false, isSpeaking = false }) => {
 
     const videoRef = useRef(null)
+    const audioRef = useRef(null)
 
+    // Bind video stream
     useEffect(() => {
         if (videoRef.current && stream) {
             videoRef.current.srcObject = stream;
         }
     }, [stream])
+
+    // Bind remote audio stream cleanly with browser autoplay unlocking
+    useEffect(() => {
+        if (isLocal || !stream) return;
+
+        const attachAndPlayAudio = () => {
+            if (audioRef.current) {
+                audioRef.current.srcObject = stream;
+                audioRef.current.play().catch((err) => {
+                    console.warn("Audio autoplay blocked, waiting for user gesture:", err);
+                    const unlock = () => {
+                        audioRef.current?.play().catch(() => {});
+                        window.removeEventListener('click', unlock);
+                        window.removeEventListener('touchstart', unlock);
+                        window.removeEventListener('keydown', unlock);
+                    };
+                    window.addEventListener('click', unlock, { once: true });
+                    window.addEventListener('touchstart', unlock, { once: true });
+                    window.addEventListener('keydown', unlock, { once: true });
+                });
+            }
+        };
+
+        attachAndPlayAudio();
+
+        // Listen for new tracks added to this stream (e.g. audio arriving after video)
+        const handleAddTrack = () => {
+            attachAndPlayAudio();
+        };
+
+        stream.addEventListener('addtrack', handleAddTrack);
+
+        return () => {
+            stream.removeEventListener('addtrack', handleAddTrack);
+        };
+    }, [stream, isLocal])
 
     return (
         <div
@@ -21,12 +59,21 @@ const VideoTile = ({ stream, name, isLocal = false, audioEnabled = false, videoE
                 borderColor: isSpeaking ? '#2B5CF0' : 'var(--border)',
             }}
         >
-            {/* Video Element (keeps existing stream attachment, autoplay, playsinline, muted, mirror styling) */}
+            {/* Dedicated Remote Audio Element (never throttled or muted by video visibility) */}
+            {!isLocal && (
+                <audio
+                    ref={audioRef}
+                    autoPlay
+                    playsInline
+                />
+            )}
+
+            {/* Video Element (always muted so browser never blocks it and video visibility doesn't kill audio) */}
             <video
                 ref={videoRef}
                 autoPlay
                 playsInline
-                muted={isLocal}
+                muted={true}
                 className={`w-full h-full object-cover transition-opacity duration-200 ${
                     videoEnabled ? "opacity-100" : "opacity-0 pointer-events-none absolute"
                 } ${isLocal ? "scale-x-[-1]" : ""}`}
