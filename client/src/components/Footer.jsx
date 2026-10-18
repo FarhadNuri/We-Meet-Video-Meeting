@@ -6,7 +6,7 @@ const Footer = () => {
       className="w-full border-t"
       style={{ borderTopColor: 'var(--border)', backgroundColor: 'var(--bg-card)' }}
     >
-      <div className="max-w-[1100px] mx-auto px-5 py-4 flex items-center justify-between">
+      <div className="max-w-[1100px] mx-auto px-4 sm:px-5 py-3.5 sm:py-4 flex items-center justify-between">
         {/* Left */}
         <div className="space-y-0.5">
           <p className="text-[15px] font-semibold" style={{ color: 'var(--text-primary)' }}>
@@ -19,7 +19,7 @@ const Footer = () => {
 
         {/* Right */}
         <a
-          href="https://github.com"
+          href="https://github.com/FarhadNuri/We-Meet-Video-Meeting"
           target="_blank"
           rel="noopener noreferrer"
           className="w-10 h-10 flex items-center justify-center rounded-lg transition-colors duration-150 cursor-pointer"

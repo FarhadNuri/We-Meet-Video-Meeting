@@ -94,9 +94,9 @@ const SessionCard = ({ session, onOpenDetails, onRejoin, onDelete, currentUserId
                 </div>
 
                 {/* Stat chips row */}
-                <div className="flex items-center gap-4 text-[13px] pt-1" style={{ color: 'var(--text-muted)' }}>
+                <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-[12px] sm:text-[13px] pt-1" style={{ color: 'var(--text-muted)' }}>
                     <div className="flex items-center gap-1.5">
-                        <Users className="w-4 h-4" strokeWidth={1.5} />
+                        <Users className="w-4 h-4 shrink-0" strokeWidth={1.5} />
                         <span>
                             {session.onlineCount !== undefined
                                 ? `${session.onlineCount} online`
@@ -107,7 +107,7 @@ const SessionCard = ({ session, onOpenDetails, onRejoin, onDelete, currentUserId
                     </div>
 
                     <div className="flex items-center gap-1.5">
-                        <MessageSquare className="w-4 h-4" strokeWidth={1.5} />
+                        <MessageSquare className="w-4 h-4 shrink-0" strokeWidth={1.5} />
                         <span>
                             {session.notesCount !== undefined
                                 ? `${session.notesCount} notes`
@@ -124,7 +124,7 @@ const SessionCard = ({ session, onOpenDetails, onRejoin, onDelete, currentUserId
             {/* Actions */}
             <div>
                 <div className="border-t my-3" style={{ borderColor: 'var(--border)' }} />
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                     <button
                         type="button"
                         onClick={() => onOpenDetails(session.meetingId || session.id)}

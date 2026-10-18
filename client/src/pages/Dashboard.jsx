@@ -116,27 +116,27 @@ const Dashboard = () => {
       className="flex-1 w-full"
       style={{ backgroundColor: 'var(--bg-page)' }}
     >
-      <div className="max-w-[1100px] mx-auto px-5 py-10 space-y-8">
+      <div className="max-w-[1100px] mx-auto px-4 sm:px-5 py-6 sm:py-10 space-y-6 sm:space-y-8">
 
         {/* ── 1. Greeting block ── */}
         <div>
           <h1
-            className="text-3xl font-semibold tracking-tight"
+            className="text-2xl sm:text-3xl font-semibold tracking-tight"
             style={{ color: 'var(--text-primary)', letterSpacing: '-0.02em' }}
           >
             {greeting}, {firstName}
           </h1>
           <div
-            className="mt-2 flex flex-wrap items-center gap-2 text-[14px]"
+            className="mt-2 flex flex-wrap items-center gap-1.5 sm:gap-2 text-[13px] sm:text-[14px]"
             style={{ color: 'var(--text-muted)' }}
           >
             <span>{dateStr}</span>
             <span className="w-1 h-1 rounded-full inline-block" style={{ background: 'var(--text-muted)' }} />
-            <span className="font-mono text-[13px]">{clockStr}</span>
+            <span className="font-mono text-[12px] sm:text-[13px]">{clockStr}</span>
             <span className="w-1 h-1 rounded-full inline-block" style={{ background: 'var(--text-muted)' }} />
             {/* Plan badge */}
             <span
-              className="px-2.5 py-0.5 rounded text-[12px] font-medium"
+              className="px-2 py-0.5 rounded text-[11px] sm:text-[12px] font-medium"
               style={{
                 backgroundColor: isPremium ? 'rgba(43,92,240,0.12)' : 'var(--bg-section)',
                 color: isPremium ? '#2B5CF0' : 'var(--text-secondary)',
@@ -153,7 +153,7 @@ const Dashboard = () => {
 
           {/* New Meeting card */}
           <div
-            className="rounded-xl border p-5 space-y-4"
+            className="rounded-xl border p-4 sm:p-5 space-y-4"
             style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border)' }}
           >
             <div>
@@ -167,7 +167,7 @@ const Dashboard = () => {
             <button
               onClick={handleCreateMeeting}
               disabled={isCreating}
-              className="h-9 px-4 rounded-lg text-[14px] font-medium flex items-center gap-1.5 cursor-pointer transition-colors duration-150 active:scale-[0.98] disabled:opacity-50"
+              className="h-10 sm:h-9 px-4 rounded-lg text-[14px] font-medium flex items-center justify-center gap-1.5 cursor-pointer transition-colors duration-150 active:scale-[0.98] disabled:opacity-50 w-full sm:w-auto"
               style={{ backgroundColor: '#2B5CF0', color: '#fff' }}
               onMouseEnter={e => e.currentTarget.style.backgroundColor = '#3A6AF5'}
               onMouseLeave={e => e.currentTarget.style.backgroundColor = '#2B5CF0'}
@@ -188,7 +188,7 @@ const Dashboard = () => {
 
           {/* Join Meeting card */}
           <div
-            className="rounded-xl border p-5 space-y-4"
+            className="rounded-xl border p-4 sm:p-5 space-y-4"
             style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border)' }}
           >
             <div>
@@ -206,7 +206,7 @@ const Dashboard = () => {
                   placeholder="abc-def-ghi"
                   value={joinId}
                   onChange={(e) => { setJoinId(e.target.value); setJoinError("") }}
-                  className="flex-1 h-9 px-3.5 rounded-lg text-[14px] font-mono outline-none transition-colors duration-150"
+                  className="flex-1 min-w-0 h-10 sm:h-9 px-3.5 rounded-lg text-[14px] font-mono outline-none transition-colors duration-150"
                   style={{
                     backgroundColor: 'var(--bg-section)',
                     border: '1px solid var(--border)',
@@ -218,7 +218,7 @@ const Dashboard = () => {
                 <button
                   type="submit"
                   disabled={!joinId.trim()}
-                  className="h-9 px-4 rounded-lg text-[14px] font-medium flex items-center gap-1.5 cursor-pointer transition-colors duration-150 active:scale-[0.98] disabled:opacity-40"
+                  className="h-10 sm:h-9 px-4 rounded-lg text-[14px] font-medium flex items-center justify-center gap-1.5 cursor-pointer transition-colors duration-150 active:scale-[0.98] disabled:opacity-40 shrink-0"
                   style={{
                     backgroundColor: 'var(--bg-section)',
                     border: '1px solid var(--border)',
@@ -241,16 +241,16 @@ const Dashboard = () => {
         {/* ── 3. Usage card ── */}
         {stats && (
           <div
-            className="rounded-xl border p-5 space-y-3"
+            className="rounded-xl border p-4 sm:p-5 space-y-3"
             style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border)' }}
           >
-            <div className="flex items-center justify-between">
-              <span className="text-[15px] font-semibold" style={{ color: 'var(--text-primary)' }}>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+              <span className="text-[14px] sm:text-[15px] font-semibold" style={{ color: 'var(--text-primary)' }}>
                 {usageLimit
                   ? `${usageCount} / ${usageLimit} meetings this month`
                   : `${usageCount} meetings this month (Unlimited)`}
               </span>
-              <span className="text-[13px]" style={{ color: 'var(--text-muted)' }}>
+              <span className="text-[12px] sm:text-[13px]" style={{ color: 'var(--text-muted)' }}>
                 {isPremium ? '100 participants max' : '10 participants max'}
               </span>
             </div>
@@ -265,8 +265,8 @@ const Dashboard = () => {
               </div>
             )}
 
-            <div className="flex items-center justify-between">
-              <span className="text-[13px]" style={{ color: 'var(--text-muted)' }}>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-[12px] sm:text-[13px]">
+              <span style={{ color: 'var(--text-muted)' }}>
                 {isPremium
                   ? 'Unlimited meetings on Premium plan'
                   : stats.resetDate
@@ -276,7 +276,7 @@ const Dashboard = () => {
               {!isPremium && (
                 <a
                   href="/pricing"
-                  className="text-[13px] font-medium"
+                  className="font-medium inline-flex items-center gap-1"
                   style={{ color: '#2B5CF0' }}
                 >
                   Upgrade plan →
@@ -301,9 +301,9 @@ const Dashboard = () => {
         )}
 
         {/* ── 4. Feature highlights ── */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
           {features.map(({ Icon, title, desc }) => (
-            <div key={title} className="space-y-2">
+            <div key={title} className="p-3 sm:p-0 rounded-lg sm:rounded-none bg-[var(--bg-card)] sm:bg-transparent border sm:border-0 border-[var(--border)] space-y-1.5 sm:space-y-2">
               <Icon
                 className="w-4 h-4"
                 strokeWidth={1.5}
@@ -312,7 +312,7 @@ const Dashboard = () => {
               <p className="text-[13px] font-semibold" style={{ color: 'var(--text-primary)' }}>
                 {title}
               </p>
-              <p className="text-[12px]" style={{ color: 'var(--text-muted)' }}>
+              <p className="text-[12px] leading-relaxed" style={{ color: 'var(--text-muted)' }}>
                 {desc}
               </p>
             </div>

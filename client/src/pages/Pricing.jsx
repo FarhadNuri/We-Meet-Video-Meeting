@@ -24,7 +24,7 @@ const Pricing = () => {
       className="flex-1 w-full min-h-[calc(100vh-140px)]"
       style={{ backgroundColor: 'var(--bg-page)' }}
     >
-      <div className="max-w-[1100px] mx-auto px-5 py-8 sm:py-10">
+      <div className="max-w-[1100px] mx-auto px-4 sm:px-5 py-6 sm:py-10">
         {/* Back link */}
         <Link
           to="/dashboard"
@@ -38,21 +38,21 @@ const Pricing = () => {
         </Link>
 
         {/* Top-left header matching Sessions page */}
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
           <h1
-            className="text-3xl font-semibold tracking-tight"
+            className="text-2xl sm:text-3xl font-semibold tracking-tight"
             style={{ color: 'var(--text-primary)', letterSpacing: '-0.02em' }}
           >
             Upgrade your plan
           </h1>
-          <p className="mt-1 text-[14px]" style={{ color: 'var(--text-muted)' }}>
+          <p className="mt-1 text-[13px] sm:text-[14px]" style={{ color: 'var(--text-muted)' }}>
             Choose the plan that fits your meeting needs and collaborate with unlimited time and participants.
           </p>
         </div>
 
         {/* Wrapper around existing Clerk <PricingTable /> */}
         <div
-          className="w-full rounded-[12px] border p-2 sm:p-6 transition-all"
+          className="w-full rounded-[12px] border p-2 sm:p-6 transition-all overflow-x-auto"
           style={{
             backgroundColor: 'var(--bg-card)',
             borderColor: 'var(--border)',

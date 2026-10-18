@@ -11,9 +11,9 @@ const SessionDetailModal = ({ session, onClose }) => {
     const isEnded = session.status === "ended";
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/60">
             <div
-                className="rounded-[12px] max-w-2xl w-full max-h-[85vh] flex flex-col overflow-hidden animate-modal-in"
+                className="rounded-[12px] max-w-2xl w-full max-h-[92vh] sm:max-h-[85vh] flex flex-col overflow-hidden animate-modal-in"
                 style={{
                     backgroundColor: 'var(--bg-elevated)',
                     border: '1px solid var(--border)',
@@ -21,12 +21,12 @@ const SessionDetailModal = ({ session, onClose }) => {
                 }}
             >
                 {/* Header */}
-                <div className="px-6 py-5 flex items-start justify-between border-b" style={{ borderColor: 'var(--border)' }}>
-                    <div className="space-y-1.5 pr-4">
-                        <div className="flex items-center gap-2">
+                <div className="px-4 py-3.5 sm:px-6 sm:py-5 flex items-start justify-between border-b" style={{ borderColor: 'var(--border)' }}>
+                    <div className="space-y-1.5 pr-3 sm:pr-4 min-w-0 flex-1">
+                        <div className="flex items-center gap-2 flex-wrap">
                             {/* Monospace ID chip */}
                             <span
-                                className="text-[12px] font-mono px-2 py-0.5 rounded border"
+                                className="text-[11px] sm:text-[12px] font-mono px-2 py-0.5 rounded border"
                                 style={{
                                     backgroundColor: 'var(--bg-section)',
                                     color: 'var(--text-muted)',
@@ -38,7 +38,7 @@ const SessionDetailModal = ({ session, onClose }) => {
 
                             {/* Status badge */}
                             <span
-                                className="flex items-center gap-1.5 text-[12px] font-medium px-2 py-0.5 rounded-full"
+                                className="flex items-center gap-1.5 text-[11px] sm:text-[12px] font-medium px-2 py-0.5 rounded-full"
                                 style={{
                                     backgroundColor: isEnded ? 'rgba(107,114,128,0.08)' : 'rgba(34,197,94,0.08)',
                                     color: isEnded ? '#6B7280' : '#22C55E',
@@ -51,15 +51,15 @@ const SessionDetailModal = ({ session, onClose }) => {
                             </span>
                         </div>
 
-                        {/* Title (20px/600) */}
-                        <h2 className="text-[20px] font-semibold tracking-tight" style={{ color: 'var(--text-primary)' }}>
+                        {/* Title */}
+                        <h2 className="text-[17px] sm:text-[20px] font-semibold tracking-tight truncate" style={{ color: 'var(--text-primary)' }}>
                             {session.title || "Meeting Details"}
                         </h2>
 
                         {/* Muted host metadata line */}
-                        <p className="text-[13px] flex items-center gap-1.5 flex-wrap" style={{ color: 'var(--text-muted)' }}>
+                        <p className="text-[12px] sm:text-[13px] flex items-center gap-1.5 flex-wrap" style={{ color: 'var(--text-muted)' }}>
                             <span>Host: <strong className="font-medium" style={{ color: 'var(--text-secondary)' }}>{session.host?.name || "Host"}</strong></span>
-                            {session.host?.email && <span>({session.host.email})</span>}
+                            {session.host?.email && <span className="hidden xs:inline">({session.host.email})</span>}
                             <span>•</span>
                             <span>{new Date(session.createdAt || Date.now()).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}</span>
                         </p>
@@ -69,22 +69,22 @@ const SessionDetailModal = ({ session, onClose }) => {
                     <button
                         type="button"
                         onClick={onClose}
-                        className="w-9 h-9 flex items-center justify-center rounded-lg transition-colors duration-150 cursor-pointer shrink-0"
+                        className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-lg transition-colors duration-150 cursor-pointer shrink-0"
                         style={{ color: 'var(--text-muted)' }}
                         onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'var(--bg-section)'; e.currentTarget.style.color = 'var(--text-primary)'; }}
                         onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
                         aria-label="Close session details"
                     >
-                        <X className="w-5 h-5" strokeWidth={1.5} />
+                        <X className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={1.5} />
                     </button>
                 </div>
 
                 {/* Tab bar (underline style, not pills) */}
-                <div className="flex px-6 border-b" style={{ borderColor: 'var(--border)' }}>
+                <div className="flex px-4 sm:px-6 border-b overflow-x-auto no-scrollbar" style={{ borderColor: 'var(--border)' }}>
                     <button
                         type="button"
                         onClick={() => setActiveTab('chat')}
-                        className="flex items-center gap-2 py-3 px-1 mr-6 text-[14px] font-medium border-b-2 transition-colors duration-150 cursor-pointer"
+                        className="flex items-center gap-1.5 sm:gap-2 py-2.5 sm:py-3 px-1 mr-4 sm:mr-6 text-[12px] sm:text-[14px] font-medium border-b-2 transition-colors duration-150 cursor-pointer shrink-0"
                         style={{
                             borderBottomColor: activeTab === 'chat' ? '#2B5CF0' : 'transparent',
                             color: activeTab === 'chat' ? 'var(--text-primary)' : 'var(--text-muted)',
@@ -98,7 +98,7 @@ const SessionDetailModal = ({ session, onClose }) => {
                     <button
                         type="button"
                         onClick={() => setActiveTab('participants')}
-                        className="flex items-center gap-2 py-3 px-1 text-[14px] font-medium border-b-2 transition-colors duration-150 cursor-pointer"
+                        className="flex items-center gap-1.5 sm:gap-2 py-2.5 sm:py-3 px-1 text-[12px] sm:text-[14px] font-medium border-b-2 transition-colors duration-150 cursor-pointer shrink-0"
                         style={{
                             borderBottomColor: activeTab === 'participants' ? '#2B5CF0' : 'transparent',
                             color: activeTab === 'participants' ? 'var(--text-primary)' : 'var(--text-muted)',
@@ -111,7 +111,7 @@ const SessionDetailModal = ({ session, onClose }) => {
                 </div>
 
                 {/* Tab content */}
-                <div className="flex-1 p-6 overflow-y-auto min-h-[280px]">
+                <div className="flex-1 p-3.5 sm:p-6 overflow-y-auto min-h-[220px] sm:min-h-[280px]">
                     {activeTab === 'chat'
                         ? <SessionChatTab messages={session.messages} />
                         : <SessionParticipantsTab participants={session.participants} host={session.host} />

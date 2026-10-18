@@ -98,12 +98,12 @@ const DeleteSessionModal = ({ session, isOwner, isOpen, onClose, onConfirm, isDe
                 )}
 
                 {/* Footer buttons */}
-                <div className="flex items-center justify-end gap-2.5 pt-2">
+                <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-2 sm:gap-2.5 pt-2 w-full">
                     <button
                         type="button"
                         onClick={onClose}
                         disabled={isDeleting}
-                        className="h-10 px-4 rounded-lg text-[14px] font-medium transition-colors duration-150 cursor-pointer disabled:opacity-50"
+                        className="h-10 px-4 rounded-lg text-[14px] font-medium transition-colors duration-150 cursor-pointer disabled:opacity-50 w-full sm:w-auto flex items-center justify-center"
                         style={{
                             backgroundColor: 'var(--bg-section)',
                             border: '1px solid var(--border)',
@@ -119,7 +119,7 @@ const DeleteSessionModal = ({ session, isOwner, isOpen, onClose, onConfirm, isDe
                         type="button"
                         onClick={onConfirm}
                         disabled={isDeleting}
-                        className="h-10 px-4 rounded-lg text-[14px] font-medium text-white transition-colors duration-150 cursor-pointer disabled:opacity-50 flex items-center gap-1.5"
+                        className="h-10 px-4 rounded-lg text-[14px] font-medium text-white transition-colors duration-150 cursor-pointer disabled:opacity-50 flex items-center justify-center gap-1.5 w-full sm:w-auto"
                         style={{ backgroundColor: '#EF4444' }}
                         onMouseEnter={e => !isDeleting && (e.currentTarget.style.backgroundColor = '#DC2626')}
                         onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#EF4444')}

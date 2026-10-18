@@ -13,8 +13,8 @@ const ICE_SERVERS = {
 export const useWebRTC = (roomId, user, onMeetingEnded, enabled = true) => {
     const [localStream, setLocalStream] = useState(null);
     const [remoteUsers, setRemoteUsers] = useState([]); // Array of { socketId, userId, userName, stream, audioEnabled, videoEnabled }
-    const [audioEnabled, setAudioEnabled] = useState(true);
-    const [videoEnabled, setVideoEnabled] = useState(true);
+    const [audioEnabled, setAudioEnabled] = useState(false);
+    const [videoEnabled, setVideoEnabled] = useState(false);
 
     const peersRef = useRef(new Map()); // socketId -> RTCPeerConnection
     const localStreamRef = useRef(null);
@@ -26,8 +26,18 @@ export const useWebRTC = (roomId, user, onMeetingEnded, enabled = true) => {
                 video: true,
                 audio: true,
             });
+            const videoTrack = stream.getVideoTracks()[0];
+            if (videoTrack) {
+                videoTrack.enabled = false;
+            }
+            const audioTrack = stream.getAudioTracks()[0];
+            if (audioTrack) {
+                audioTrack.enabled = false;
+            }
             localStreamRef.current = stream;
             setLocalStream(stream);
+            setVideoEnabled(false);
+            setAudioEnabled(false);
             return stream;
         } catch (error) {
             toast.error("Could not access camera/microphone");
@@ -35,9 +45,14 @@ export const useWebRTC = (roomId, user, onMeetingEnded, enabled = true) => {
             // Fallback: try audio only
             try {
                 const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                const audioTrack = audioStream.getAudioTracks()[0];
+                if (audioTrack) {
+                    audioTrack.enabled = false;
+                }
                 localStreamRef.current = audioStream;
                 setLocalStream(audioStream);
                 setVideoEnabled(false);
+                setAudioEnabled(false);
                 return audioStream;
             } catch (err) {
                 console.error("Audio-only fallback error:", err);
@@ -92,8 +107,8 @@ export const useWebRTC = (roomId, user, onMeetingEnded, enabled = true) => {
                             userId: targetUser?.userId,
                             userName: targetUser?.userName || "Participant",
                             stream: remoteStream,
-                            audioEnabled: targetUser?.audioEnabled ?? true,
-                            videoEnabled: targetUser?.videoEnabled ?? true,
+                            audioEnabled: targetUser?.audioEnabled ?? false,
+                            videoEnabled: targetUser?.videoEnabled ?? false,
                         },
                     ];
                 }
@@ -123,8 +138,8 @@ export const useWebRTC = (roomId, user, onMeetingEnded, enabled = true) => {
             socket.emit("join-room", {
                 roomId,
                 user,
-                audioEnabled: true,
-                videoEnabled: true,
+                audioEnabled: false,
+                videoEnabled: false,
             });
 
             // 1. Receive all existing users in room
@@ -257,28 +272,62 @@ export const useWebRTC = (roomId, user, onMeetingEnded, enabled = true) => {
     }, [roomId, user?.id, enabled, createPeerConnection, initLocalStream, onMeetingEnded]);
 
     // Toggle local mic
-    const toggleAudio = () => {
-        if (localStreamRef.current) {
-            const audioTrack = localStreamRef.current.getAudioTracks()[0];
-            if (audioTrack) {
-                const newState = !audioEnabled;
-                audioTrack.enabled = newState;
-                setAudioEnabled(newState);
-                socket.emit("toggle-audio", { roomId, audioEnabled: newState });
+    const toggleAudio = async () => {
+        if (!localStreamRef.current) return;
+        let audioTrack = localStreamRef.current.getAudioTracks()[0];
+        if (!audioTrack) {
+            try {
+                const newStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                const newTrack = newStream.getAudioTracks()[0];
+                if (newTrack) {
+                    localStreamRef.current.addTrack(newTrack);
+                    peersRef.current.forEach((peer) => {
+                        peer.addTrack(newTrack, localStreamRef.current);
+                    });
+                    audioTrack = newTrack;
+                }
+            } catch (err) {
+                toast.error("Could not access microphone");
+                console.error("Error enabling microphone:", err);
+                return;
             }
+        }
+
+        if (audioTrack) {
+            const newState = !audioEnabled;
+            audioTrack.enabled = newState;
+            setAudioEnabled(newState);
+            socket.emit("toggle-audio", { roomId, audioEnabled: newState });
         }
     };
 
     // Toggle local camera
-    const toggleVideo = () => {
-        if (localStreamRef.current) {
-            const videoTrack = localStreamRef.current.getVideoTracks()[0];
-            if (videoTrack) {
-                const newState = !videoEnabled;
-                videoTrack.enabled = newState;
-                setVideoEnabled(newState);
-                socket.emit("toggle-video", { roomId, videoEnabled: newState });
+    const toggleVideo = async () => {
+        if (!localStreamRef.current) return;
+        let videoTrack = localStreamRef.current.getVideoTracks()[0];
+        if (!videoTrack) {
+            try {
+                const newStream = await navigator.mediaDevices.getUserMedia({ video: true });
+                const newTrack = newStream.getVideoTracks()[0];
+                if (newTrack) {
+                    localStreamRef.current.addTrack(newTrack);
+                    peersRef.current.forEach((peer) => {
+                        peer.addTrack(newTrack, localStreamRef.current);
+                    });
+                    videoTrack = newTrack;
+                }
+            } catch (err) {
+                toast.error("Could not access camera");
+                console.error("Error enabling camera:", err);
+                return;
             }
+        }
+
+        if (videoTrack) {
+            const newState = !videoEnabled;
+            videoTrack.enabled = newState;
+            setVideoEnabled(newState);
+            socket.emit("toggle-video", { roomId, videoEnabled: newState });
         }
     };
 
